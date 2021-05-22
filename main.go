@@ -1,16 +1,16 @@
-
 package main
 
 import (
-    "fmt"
-    "github.com/google/gopacket"
-    "github.com/google/gopacket/layers"
-    "github.com/google/gopacket/pcap"
-    "log"
-    "encoding/hex"
-    "strings"
-    "time"
-    "os"
+	"encoding/hex"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/google/gopacket"
+	"github.com/google/gopacket/layers"
+	"github.com/google/gopacket/pcap"
 )
 
 var (
@@ -23,10 +23,10 @@ var (
     // Default mode is dumping all captured packets. expression indicates '<expression>' parameter.
     // Expression parameter should be given in "" characters.
     expression string = ""
-    snapshotLen int32  = 1024
+    snapshotLen int32  = 65535
     promiscuous bool   = true
     err         error
-    timeout     time.Duration = 30 * time.Second
+    timeout     time.Duration = -1 * time.Second
     handle      *pcap.Handle
 )
 
@@ -77,6 +77,15 @@ func main() {
     fmt.Println("-s -> ", string_payload)
     fmt.Println("expression -> ", expression)
     */
+
+    if len(readed_arguments_index) == 0 {
+        fmt.Println("Suggested Usage: sudo go run main.go -i <interface> <options> <expression>")
+        fmt.Println("Options:")
+        fmt.Println("\t -r: Read packets from <file> in tcpdump format")
+        fmt.Println("\t -s: Keep only packets that contain <string> in their payload (In quotation marks).")
+        fmt.Println("<expression> is a BPF filter that specifies which packets will be dumped. If no filter is given, packets seen on the interface (or contained in the trace) should be dumped. Otherwise, only packets matching <expression> should be dumped.")
+        os.Exit(3)
+    }
 
     if pcapFile != "" {
         // If '-r' parameter is specified, then read pcapFile.
